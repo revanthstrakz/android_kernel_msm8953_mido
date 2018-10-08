@@ -1684,6 +1684,7 @@
 		qcom,msm-bus,num-cases = <4>;
 		qcom,msm-bus,num-paths = <1>;
 		qcom,support-bus-scaling;
+		qcom,appsbl-qseecom-support;
 		qcom,msm-bus,vectors-KBps =
 			<55 512 0 0>,
 			<55 512 0 0>,
@@ -1763,6 +1764,7 @@
 		qcom,msm-bus,name = "sdcc_ice_noc";
 		qcom,msm-bus,num-cases = <2>;
 		qcom,msm-bus,num-paths = <1>;
+		qcom,detect-dpdm-floating;
 		qcom,msm-bus,vectors-KBps =
 			<78 512 0 0>,    /* No vote */
 			<78 512 1000 0>; /* Max. bandwidth */
