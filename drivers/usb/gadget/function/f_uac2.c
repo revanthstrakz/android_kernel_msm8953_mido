@@ -2004,7 +2004,6 @@ in_rq_range(struct usb_function *fn, const struct usb_ctrlrequest *cr)
 
 		value = min_t(unsigned, w_length, sizeof r);
 		memcpy(req->buf, &r, value);
-        'struct cntrl_*_lay3'
 	} else {
 		dev_err(&uac2->pdev.dev,
 			"%s:%d control_selector=%d TODO!\n",
