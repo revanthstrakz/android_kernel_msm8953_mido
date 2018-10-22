@@ -878,7 +878,7 @@ __limProcessDelTsReq(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo,tpPESession pse
     tsinfo = delts.wmeTspecPresent ? &delts.tspec.tsinfo : &delts.tsinfo;
 
     // if no Admit Control, ignore the request
-    if (tsinfo->traffic.accessPolicy == SIR_MAC_ACCESSPOLICY_EDCA)
+    if ((tsinfo->traffic.accessPolicy == SIR_MAC_ACCESSPOLICY_EDCA))
     {
     
         if (upToAc(tsinfo->traffic.userPrio) >= MAX_NUM_AC)
@@ -1359,6 +1359,16 @@ __limProcessAddBAReq( tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo,tpPESession ps
     val = 0;
     val1 = 0;
 
+    pSta = dphLookupHashEntry(pMac, pHdr->sa, &aid,
+                              &psessionEntry->dph.dphHashTable);
+    if (((psessionEntry->limSystemRole == eLIM_AP_ROLE ||
+          psessionEntry->limSystemRole == eLIM_BT_AMP_AP_ROLE) &&
+         pSta != NULL && !pSta->isKeyInstalled) ||
+        !psessionEntry->isKeyInstalled) {
+        limLog(pMac, LOGE, FL("Reject ADDBA as set_key is not done"));
+        return;
+    }
+
     // Unpack the received frame
     nStatus = dot11fUnpackAddBAReq( pMac, pBody, frameLen, &frmAddBAReq );
     if( DOT11F_FAILED( nStatus ))
@@ -1385,7 +1395,6 @@ __limProcessAddBAReq( tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo,tpPESession ps
 
     psessionEntry->amsduSupportedInBA = frmAddBAReq.AddBAParameterSet.amsduSupported;
 
-    pSta = dphLookupHashEntry( pMac, pHdr->sa, &aid, &psessionEntry->dph.dphHashTable );
     if( pSta == NULL )
     {
         limLog( pMac, LOGE,
@@ -1660,13 +1669,11 @@ tANI_U8 *pBody;
     if (0 == frmAddBARsp.AddBAParameterSet.bufferSize)
         frmAddBARsp.AddBAParameterSet.bufferSize = val;
     else
-    {
         frmAddBARsp.AddBAParameterSet.bufferSize =
                     VOS_MIN(val, frmAddBARsp.AddBAParameterSet.bufferSize);
         limLog( pMac, LOG1,
             FL( "ADDBA RSP  Buffsize = %d" ),
             frmAddBARsp.AddBAParameterSet.bufferSize);
-    }
     // Now, validate the ADDBA Rsp
     if( eSIR_MAC_SUCCESS_STATUS !=
         __limValidateAddBAParameterSet( pMac, pSta,

@@ -6164,7 +6164,7 @@ static void WLANTL_SampleRxRSSI(WLANTL_CbType* pTLCb, void * pBDHeader,
       pClientSTA->rssi_sample_sum -= pClientSTA->rssi_sample[old_idx];
       pClientSTA->rssi_sample[old_idx] = curr_RSSI;
       pClientSTA->rssi_sample_sum += pClientSTA->rssi_sample[old_idx];
-      old_idx >= WLANTL_RSSI_SAMPLE_CNT ? old_idx = 0 : old_idx++;
+      old_idx >= (WLANTL_RSSI_SAMPLE_CNT - 1) ? old_idx = 0 : old_idx++;
       pClientSTA->rssi_stale_idx = old_idx;
    } else {
       pClientSTA->rssi_sample[count] = curr_RSSI;
@@ -6639,7 +6639,7 @@ WLANTL_RxFrames
               }
               else
               {
-                  VOS_TRACE(VOS_MODULE_ID_TL, VOS_TRACE_LEVEL_ERROR,
+                  VOS_TRACE(VOS_MODULE_ID_TL, VOS_TRACE_LEVEL_DEBUG,
                             "staId %d doesn't exist"
                             " but mapped to AP staId %d PN:[0x%llX]",
                             ucSTAId, ucAddr3STAId, pn_num);
@@ -8757,7 +8757,7 @@ WLANTL_STATxAuth
 
   /* This code is to send traffic with lower priority AC when we does not 
      get admitted to send it. Today HAL does not downgrade AC so this code 
-     does not get executed.(In other words, HAL doesn’t change tid. The if 
+     does not get executed.(In other words, HAL doesn?t change tid. The if 
      statement is always false.)
      NOTE: In the case of LA downgrade occurs in HDD (that was the change 
      Phani made during WMM-AC plugfest). If WM & BMP also took this approach, 
@@ -11874,8 +11874,8 @@ WLAN_TLAPGetNextTxIds
 
   ++ucNextSTA;
 
-    if ( WLAN_MAX_STA_COUNT <= ucNextSTA )
-      ucNextSTA = 0;
+  if ( WLAN_MAX_STA_COUNT <= ucNextSTA )
+    ucNextSTA = 0;
 
     isServed = FALSE;
     if ( 0 == pTLCb->ucCurLeftWeight )
