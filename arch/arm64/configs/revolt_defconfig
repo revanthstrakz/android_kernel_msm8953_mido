@@ -589,7 +589,7 @@ CONFIG_CPU_FREQ_GOV_PWRUTILX=y
 #
 # Fp Boost
 #
-# CONFIG_FINGERPRINT_BOOST is not set
+CONFIG_FINGERPRINT_BOOST=y
 
 #
 # ARM CPU frequency scaling drivers
