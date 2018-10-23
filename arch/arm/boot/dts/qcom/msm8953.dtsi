@@ -35,7 +35,7 @@
 					compatible = "android,vendor";
 					dev = "/dev/block/platform/soc/7824900.sdhci/by-name/vendor";
 					type = "ext4";
-					mnt_flags = "ro,barrier=1,discard";
+					mnt_flags = "ro,noatime,barrier=1,discard";
 					fsmgr_flags = "wait";
 					status = "ok";
 				};
@@ -43,7 +43,7 @@
 					compatible = "android,system";
 					dev = "/dev/block/platform/soc/7824900.sdhci/by-name/system";
 					type = "ext4";
-					mnt_flags = "ro,barrier=1,discard";
+					mnt_flags = "ro,noatime,barrier=1,discard";
 					fsmgr_flags = "wait";
 					status = "ok";
 				};
@@ -499,11 +499,11 @@
 		compatible = "qcom,msm-thermal";
 		qcom,sensor-id = <9>;
 		qcom,poll-ms = <250>;
-		qcom,limit-temp = <60>;
-		qcom,temp-hysteresis = <10>;
+		qcom,limit-temp = <90>;
+		qcom,temp-hysteresis = <50>;
 		qcom,freq-step = <1>;
-		qcom,core-limit-temp = <80>;
-		qcom,core-temp-hysteresis = <10>;
+		qcom,core-limit-temp = <85>;
+		qcom,core-temp-hysteresis = <50>;
 		qcom,freq-mitigation-temp = <95>;
 		qcom,freq-mitigation-temp-hysteresis = <10>;
 		qcom,freq-mitigation-value = <1689600>;
@@ -547,12 +547,12 @@
 		qcom,bcl-framework-interface;
 		qcom,bcl-freq-control-list = <&CPU4 &CPU5 &CPU6 &CPU7>;
 		qcom,ibat-monitor {
-			qcom,low-threshold-uamp = <3400000>;
-			qcom,high-threshold-uamp = <4200000>;
+			qcom,low-threshold-uamp = <2100000>;
+			qcom,high-threshold-uamp = <6200000>;
 			qcom,mitigation-freq-khz = <1689600>;
-			qcom,vph-high-threshold-uv = <3500000>;
-			qcom,vph-low-threshold-uv = <3200000>;
-			qcom,soc-low-threshold = <5>;
+			qcom,vph-high-threshold-uv = <1100000>;
+			qcom,vph-low-threshold-uv = <5200000>;
+			qcom,soc-low-threshold = <3>;
 			qcom,thermal-handle = <&msm_thermal_freq>;
 		};
 	};
