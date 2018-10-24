@@ -48,6 +48,11 @@ CONFIG_FRANDOM=y
 CONFIG_VOLTAGE_CONTROL=y
 
 #
+# QuickWakeup
+#
+CONFIG_QUICK_WAKEUP=y
+
+#
 # Auto-SMP
 #
 # CONFIG_ASMP is not set
