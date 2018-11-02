@@ -45,7 +45,7 @@ CONFIG_FRANDOM=y
 #
 # Voltage Control
 #
-CONFIG_VOLTAGE_CONTROL=y
+# CONFIG_VOLTAGE_CONTROL is not set
 
 #
 # QuickWakeup
