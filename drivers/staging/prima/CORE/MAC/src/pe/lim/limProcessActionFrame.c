@@ -1361,13 +1361,6 @@ __limProcessAddBAReq( tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo,tpPESession ps
 
     pSta = dphLookupHashEntry(pMac, pHdr->sa, &aid,
                               &psessionEntry->dph.dphHashTable);
-    if (((psessionEntry->limSystemRole == eLIM_AP_ROLE ||
-          psessionEntry->limSystemRole == eLIM_BT_AMP_AP_ROLE) &&
-         pSta != NULL && !pSta->isKeyInstalled) ||
-        !psessionEntry->isKeyInstalled) {
-        limLog(pMac, LOGE, FL("Reject ADDBA as set_key is not done"));
-        return;
-    }
 
     // Unpack the received frame
     nStatus = dot11fUnpackAddBAReq( pMac, pBody, frameLen, &frmAddBAReq );
@@ -1395,6 +1388,8 @@ __limProcessAddBAReq( tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo,tpPESession ps
 
     psessionEntry->amsduSupportedInBA = frmAddBAReq.AddBAParameterSet.amsduSupported;
 
+    pSta = dphLookupHashEntry(pMac, pHdr->sa, &aid,
+                              &psessionEntry->dph.dphHashTable);
     if( pSta == NULL )
     {
         limLog( pMac, LOGE,
