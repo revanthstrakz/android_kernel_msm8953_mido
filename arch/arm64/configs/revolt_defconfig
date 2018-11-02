@@ -50,7 +50,7 @@ CONFIG_VOLTAGE_CONTROL=y
 #
 # QuickWakeup
 #
-CONFIG_QUICK_WAKEUP=y
+# CONFIG_QUICK_WAKEUP is not set
 
 #
 # Auto-SMP
