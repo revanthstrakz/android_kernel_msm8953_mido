@@ -16,6 +16,9 @@
 #include <linux/kthread.h>
 #include <linux/delay.h>
 #include <linux/freezer.h>
+#include <linux/fb.h>
+#include <linux/power_supply.h>
+#include <linux/wakelock.h>
 
 #include "f2fs.h"
 #include "node.h"
