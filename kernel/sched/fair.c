@@ -2857,7 +2857,7 @@ static inline int propagate_entity_load_avg(struct sched_entity *se)
 	return 0;
 }
 
-static inline void set_tg_cfs_propagate(struct cfs_rq *cfs_rq) {}
+static inline void add_tg_cfs_propagate(struct cfs_rq *cfs_rq, long runnable_sum) {}
 
 #endif /* CONFIG_FAIR_GROUP_SCHED */
 
@@ -3106,6 +3106,7 @@ void sync_entity_load_avg(struct sched_entity *se)
 void remove_entity_load_avg(struct sched_entity *se)
 {
 	struct cfs_rq *cfs_rq = cfs_rq_of(se);
+    unsigned long flags;
 
 	/*
 	 * tasks cannot exit without having gone through wake_up_new_task() ->
@@ -3164,7 +3165,10 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq, bool update_freq)
 #define SKIP_AGE_LOAD	0x0
 #define SKIP_CPUFREQ	0x0
 
-static inline void update_load_avg(struct sched_entity *se, int not_used1){}
+static inline void update_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *se, int not_used1)
+{
+       cfs_rq_util_change(cfs_rq, 0);
+}
 static inline void
 enqueue_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *se) {}
 static inline void
@@ -10395,7 +10399,27 @@ void print_cfs_stats(struct seq_file *m, int cpu)
 		print_cfs_rq(m, cpu, cfs_rq);
 	rcu_read_unlock();
 }
-#endif
+#endif /* CONFIG_SCHED_DEBUG */
+
+#ifdef CONFIG_NUMA_BALANCING
+void show_numa_stats(struct task_struct *p, struct seq_file *m)
+{
+         int node;
+         unsigned long tsf = 0, tpf = 0, gsf = 0, gpf = 0;
+ 
+         for_each_online_node(node) {
+                 if (p->numa_faults) {
+                         tsf = p->numa_faults[task_faults_idx(NUMA_MEM, node, 0)];
+                         tpf = p->numa_faults[task_faults_idx(NUMA_MEM, node, 1)];
+                 }
+                 if (p->numa_group) {
+                         gsf = p->numa_group->faults[task_faults_idx(NUMA_MEM, node, 0)],
+                         gpf = p->numa_group->faults[task_faults_idx(NUMA_MEM, node, 1)];
+                 }
+                 print_numa_stats(m, node, tsf, tpf, gsf, gpf);
+         }
+}
+#endif /* CONFIG_NUMA_BALANCING */
 
 __init void init_sched_fair_class(void)
 {
