@@ -6695,7 +6695,8 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
 
        sync_entity_load_avg(&p->se);
 
-       unsigned long cur_energy, spare_cap, max_spare_cap = 0;
+       if (sd) {
+               unsigned long cur_energy, spare_cap, max_spare_cap = 0;
                int max_spare_cap_cpu = -1;
 
                for_each_cpu_and(cpu, perf_domain_span(pd), sched_domain_span(sd)) {
@@ -6732,7 +6733,8 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
                                best_energy_cpu = max_spare_cap_cpu;
                        }
                }
-unlock:
+      }
+
        rcu_read_unlock();
 
        /*

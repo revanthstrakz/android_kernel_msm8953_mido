@@ -656,9 +656,9 @@ static void build_perf_domains(const struct cpumask *cpu_map)
          rcu_assign_pointer(rd->pd, NULL);
          if (tmp)
                  call_rcu(&tmp->rcu, destroy_perf_domain_rcu);
-}
-#else
+	
 static void free_pd(struct perf_domain *pd) { }
+}
 #endif /* CONFIG_ENERGY_MODEL && CONFIG_CPU_FREQ_GOV_SCHEDUTIL*/
 
 static void update_cpu_capacity(unsigned int cpu)

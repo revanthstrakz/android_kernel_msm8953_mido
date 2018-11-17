@@ -60,8 +60,6 @@
 #include <linux/page-debug-flags.h>
 #include <linux/hugetlb.h>
 #include <linux/sched/rt.h>
-#include <linux/sched/mm.h>
-#include <linux/page_owner.h>
 #include <linux/kthread.h>
 #include <linux/memcontrol.h>
 #include <linux/ftrace.h>
@@ -853,6 +851,7 @@ static void __free_pages_ok(struct page *page, unsigned int order)
 	local_irq_restore(flags);
 }
 
+bool __meminitdata extra_latent_entropy;
 void  __free_pages_bootmem(struct page *page, unsigned long pfn,
 							unsigned int order)
 {
@@ -869,7 +868,7 @@ void  __free_pages_bootmem(struct page *page, unsigned long pfn,
 	__ClearPageReserved(p);
 	set_page_count(p, 0);
 
-		if (extra_latent_entropy && !PageHighMem(page) && page_to_pfn(page) < 0x100000) {
+		if (!PageHighMem(page) && page_to_pfn(page) < 0x100000) {
 		unsigned long hash = 0;
 		size_t index, end = PAGE_SIZE * nr_pages / sizeof hash;
 		const unsigned long *data = lowmem_page_address(page);
