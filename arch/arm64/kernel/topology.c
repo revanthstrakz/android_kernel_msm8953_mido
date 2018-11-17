@@ -19,7 +19,6 @@
 #include <linux/nodemask.h>
 #include <linux/of.h>
 #include <linux/sched.h>
-#include <linux/sched.h>
 #include <linux/sched_energy.h>
 
 #include <asm/cputype.h>
@@ -287,6 +286,203 @@ static struct sched_domain_topology_level arm64_topology[] = {
 	{ cpu_cpu_mask, cpu_cpu_flags, cpu_cluster_energy, SD_INIT_NAME(DIE) },
 	{ NULL, },
 };
+
+#include <linux/sched.h>
+ 
+/* Protected by sched_domains_mutex: */
+static cpumask_var_t sched_domains_tmpmask;
+static cpumask_var_t sched_domains_tmpmask2;
+ 
+#ifdef CONFIG_SCHED_DEBUG
+ 
+static int __init sched_debug_setup(char *str)
+{
+         sched_debug_enabled = true;
+ 
+         return 0;
+}
+early_param("sched_debug", sched_debug_setup);
+ 
+static inline bool sched_debug(void)
+{
+         return sched_debug_enabled;
+}
+ 
+static int sched_domain_debug_one(struct sched_domain *sd, int cpu, int level,
+                                   struct cpumask *groupmask)
+{
+         struct sched_group *group = sd->groups;
+ 
+         cpumask_clear(groupmask);
+ 
+         printk(KERN_DEBUG "%*s domain-%d: ", level, "", level);
+ 
+         if (!(sd->flags & SD_LOAD_BALANCE)) {
+                 printk("does not load-balance\n");
+                 if (sd->parent)
+                         printk(KERN_ERR "ERROR: !SD_LOAD_BALANCE domain has parent");
+                 return -1;
+         }
+ 
+         printk(KERN_CONT "span=%*pbl level=%s\n",
+                cpumask_pr_args(sched_domain_span(sd)), sd->name);
+ 
+         if (!cpumask_test_cpu(cpu, sched_domain_span(sd))) {
+                 printk(KERN_ERR "ERROR: domain->span does not contain CPU%d\n", cpu);
+         }
+         if (group && !cpumask_test_cpu(cpu, sched_group_span(group))) {
+                 printk(KERN_ERR "ERROR: domain->groups does not contain CPU%d\n", cpu);
+         }
+ 
+         printk(KERN_DEBUG "%*s groups:", level + 1, "");
+         do {
+                 if (!group) {
+                         printk("\n");
+                         printk(KERN_ERR "ERROR: group is NULL\n");
+                         break;
+                 }
+ 
+                 if (!cpumask_weight(sched_group_span(group))) {
+                         printk(KERN_CONT "\n");
+                         printk(KERN_ERR "ERROR: empty group\n");
+                         break;
+                 }
+ 
+                 if (!(sd->flags & SD_OVERLAP) &&
+                     cpumask_intersects(groupmask, sched_group_span(group))) {
+                         printk(KERN_CONT "\n");
+                         printk(KERN_ERR "ERROR: repeated CPUs\n");
+                         break;
+                 }
+ 
+                 cpumask_or(groupmask, groupmask, sched_group_span(group));
+ 
+                 printk(KERN_CONT " %d:{ span=%*pbl",
+                                 group->sgc->id,
+                                 cpumask_pr_args(sched_group_span(group)));
+ 
+                 if ((sd->flags & SD_OVERLAP) &&
+                     !cpumask_equal(group_balance_mask(group), sched_group_span(group))) {
+                         printk(KERN_CONT " mask=%*pbl",
+                                 cpumask_pr_args(group_balance_mask(group)));
+                 }
+ 
+                 if (group->sgc->capacity != SCHED_CAPACITY_SCALE)
+                         printk(KERN_CONT " cap=%lu", group->sgc->capacity);
+ 
+                 if (group == sd->groups && sd->child &&
+                     !cpumask_equal(sched_domain_span(sd->child),
+                                    sched_group_span(group))) {
+                         printk(KERN_ERR "ERROR: domain->groups does not match domain->child\n");
+                 }
+ 
+                 printk(KERN_CONT " }");
+ 
+                 group = group->next;
+ 
+                 if (group != sd->groups)
+                         printk(KERN_CONT ",");
+ 
+         } while (group != sd->groups);
+         printk(KERN_CONT "\n");
+ 
+         if (!cpumask_equal(sched_domain_span(sd), groupmask))
+                 printk(KERN_ERR "ERROR: groups don't span domain->span\n");
+ 
+         if (sd->parent &&
+             !cpumask_subset(groupmask, sched_domain_span(sd->parent)))
+                 printk(KERN_ERR "ERROR: parent span is not a superset of domain->span\n");
+         return 0;
+}
+ 
+static void sched_domain_debug(struct sched_domain *sd, int cpu)
+{
+         int level = 0;
+ 
+         if (!sched_debug_enabled)
+                 return;
+ 
+         if (!sd) {
+                 printk(KERN_DEBUG "CPU%d attaching NULL sched-domain.\n", cpu);
+                 return;
+         }
+ 
+         printk(KERN_DEBUG "CPU%d attaching sched-domain(s):\n", cpu);
+ 
+         for (;;) {
+                 if (sched_domain_debug_one(sd, cpu, level, sched_domains_tmpmask))
+                         break;
+                 level++;
+                 sd = sd->parent;
+                 if (!sd)
+                         break;
+         }
+}
+#else /* !CONFIG_SCHED_DEBUG */
+ 
+# define sched_debug_enabled 0
+# define sched_domain_debug(sd, cpu) do { } while (0)
+static inline bool sched_debug(void)
+{
+         return false;
+}
+#endif /* CONFIG_SCHED_DEBUG */
+ 
+static int sd_degenerate(struct sched_domain *sd)
+{
+         if (cpumask_weight(sched_domain_span(sd)) == 1)
+                 return 1;
+ 
+         /* Following flags need at least 2 groups */
+         if (sd->flags & (SD_LOAD_BALANCE |
+                          SD_BALANCE_NEWIDLE |
+                          SD_BALANCE_FORK |
+                          SD_BALANCE_EXEC |
+                          SD_SHARE_CPUCAPACITY |
+                          SD_ASYM_CPUCAPACITY |
+                          SD_SHARE_PKG_RESOURCES |
+                          SD_SHARE_POWERDOMAIN)) {
+                 if (sd->groups)
+                         return 0;
+         }
+ 
+         /* Following flags don't use groups */
+         if (sd->flags & (SD_WAKE_AFFINE))
+                 return 0;
+ 
+         return 1;
+}
+ 
+static int
+sd_parent_degenerate(struct sched_domain *sd, struct sched_domain *parent)
+{
+         unsigned long cflags = sd->flags, pflags = parent->flags;
+ 
+         if (sd_degenerate(parent))
+                 return 1;
+ 
+         if (!cpumask_equal(sched_domain_span(sd), sched_domain_span(parent)))
+                 return 0;
+ 
+         /* Flags needing groups don't count if only 1 group in parent */
+         if (parent->groups) {
+                 pflags &= ~(SD_LOAD_BALANCE |
+                                 SD_BALANCE_NEWIDLE |
+                                 SD_BALANCE_FORK |
+                                 SD_BALANCE_EXEC |
+                                 SD_ASYM_CPUCAPACITY |
+                                 SD_SHARE_CPUCAPACITY |
+                                 SD_SHARE_PKG_RESOURCES |
+                                 SD_PREFER_SIBLING |
+                                 SD_SHARE_POWERDOMAIN);
+                 if (nr_node_ids == 1)
+                         pflags &= ~SD_SERIALIZE;
+         }
+         if (~cflags & pflags)
+                 return 0;
+ 
+         return 1;
+}
 
 #if defined(CONFIG_ENERGY_MODEL) && defined(CONFIG_CPU_FREQ_GOV_SCHEDUTIL)
 DEFINE_MUTEX(sched_energy_mutex);
