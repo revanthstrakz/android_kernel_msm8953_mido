@@ -11492,6 +11492,9 @@ eHalStatus csrRoamLostLink( tpAniSirGlobal pMac, tANI_U32 sessionId, tANI_U32 ty
          Still enable idle scan for polling in case concurrent sessions are running */
         if(CSR_IS_INFRASTRUCTURE(&pSession->connectedProfile))
         {
+            //remove the connected BSS in infrastructure mode
+            csrRoamRemoveConnectedBssFromScanCache(pMac,
+                                                   &pSession->connectedProfile);
             csrScanStartIdleScan(pMac);
         }
     }
