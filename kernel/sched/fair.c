@@ -10493,6 +10493,7 @@ void print_cfs_stats(struct seq_file *m, int cpu)
 	rcu_read_unlock();
 }
 #endif /* CONFIG_SCHED_DEBUG */
+
 #ifdef CONFIG_NUMA_BALANCING
 void show_numa_stats(struct task_struct *p, struct seq_file *m)
 {
@@ -10511,8 +10512,10 @@ void show_numa_stats(struct task_struct *p, struct seq_file *m)
                  print_numa_stats(m, node, tsf, tpf, gsf, gpf);
          }
 }
+#endif /* CONFIG_NUMA_BALANCING */
 
 __init void init_sched_fair_class(void)
+
 {
 #ifdef CONFIG_SMP
 	open_softirq(SCHED_SOFTIRQ, run_rebalance_domains);
