@@ -6674,7 +6674,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
                        }
                }
        }
-unlock:
+
        rcu_read_unlock();
        /*
         * Pick the best CPU if prev_cpu cannot be used, or if it saves at
@@ -6714,6 +6714,7 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
 
 	if (sd_flag & SD_BALANCE_WAKE) {
 		int _wake_cap = wake_cap(p, cpu, prev_cpu);
+        record_wakee(p);
 
 		if (cpumask_test_cpu(cpu, tsk_cpus_allowed(p))) {
 			bool about_to_idle = (cpu_rq(cpu)->nr_running < 2);
@@ -6722,8 +6723,7 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
 			    !_wake_cap && about_to_idle)
 				return cpu;
 		}
-
-		record_wakee(p);
+		
 		want_affine = !wake_wide(p, sibling_count_hint) &&
 			      !_wake_cap &&
 			      cpumask_test_cpu(cpu, &p->cpus_allowed);
