@@ -58,9 +58,13 @@ CONFIG_FRANDOM=y
 # CONFIG_ASMP is not set
 
 #
-# General setup
+# ZEN Kernel
 #
 CONFIG_ZEN_INTERACTIVE=y
+
+#
+# General setup
+#
 CONFIG_INIT_ENV_ARG_LIMIT=32
 CONFIG_CROSS_COMPILE=""
 # CONFIG_COMPILE_TEST is not set
