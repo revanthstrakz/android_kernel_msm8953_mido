@@ -828,6 +828,14 @@ extern struct user_struct root_user;
 struct backing_dev_info;
 struct reclaim_state;
 
+enum uclamp_id {
+       UCLAMP_MIN = 0, /* Minimum utilization */
+       UCLAMP_MAX,     /* Maximum utilization */
+
+       /* Utilization clamping constraints count */
+       UCLAMP_CNT
+};
+
 #if defined(CONFIG_SCHEDSTATS) || defined(CONFIG_TASK_DELAY_ACCT)
 struct sched_info {
 	/* cumulative counters */
@@ -1509,6 +1517,11 @@ struct task_struct {
 	struct task_group *sched_task_group;
 #endif
 	struct sched_dl_entity dl;
+
+#ifdef CONFIG_UCLAMP_TASK
+    /* Utlization clamp values for this task */
+    int uclamp[UCLAMP_CNT];
+#endif
 
 #ifdef CONFIG_PREEMPT_NOTIFIERS
 	/* list of struct preempt_notifier: */
