@@ -1228,11 +1228,6 @@ struct mempolicy;
 struct pipe_inode_info;
 struct uts_namespace;
 
-struct load_weight {
-	unsigned long weight;
-	u32 inv_weight;
-};
-
 /*
  * The load_avg/util_avg accumulates an infinite geometric series.
  * 1) load_avg factors frequency scaling into the amount of time that a
@@ -1247,12 +1242,6 @@ struct load_weight {
  * the highest weight (=88761) always runnable, we should not overflow
  * 2) for entity, support any load.weight always runnable
  */
-struct sched_avg {
-	u64 last_update_time, load_sum;
-	u32 util_sum, period_contrib;
-	unsigned long load_avg, util_avg;
-};
-
 #ifdef CONFIG_SCHEDSTATS
 struct sched_statistics {
 	u64			wait_start;
@@ -1352,55 +1341,229 @@ struct ravg {
 	u16 active_windows;
 };
 #endif
-
-struct sched_entity {
-	struct load_weight	load;		/* for load-balancing */
-	struct rb_node		run_node;
-	struct list_head	group_node;
-	unsigned int		on_rq;
-
-	u64			exec_start;
-	u64			sum_exec_runtime;
-	u64			vruntime;
-	u64			prev_sum_exec_runtime;
-
-	u64			nr_migrations;
-
-#ifdef CONFIG_SCHEDSTATS
-	struct sched_statistics statistics;
-#endif
-
-#ifdef CONFIG_FAIR_GROUP_SCHED
-	int			depth;
-	struct sched_entity	*parent;
-	/* rq on which this entity is (to be) queued: */
-	struct cfs_rq		*cfs_rq;
-	/* rq "owned" by this entity/group: */
-	struct cfs_rq		*my_q;
-#endif
-
-#ifdef CONFIG_SMP
-	/* Per entity load average tracking */
-	struct sched_avg	avg;
-#endif
+ 
+struct sched_info {
+#ifdef CONFIG_SCHED_INFO
+         /* Cumulative counters: */
+ 
+         /* # of times we have run on this CPU: */
+         unsigned long                   pcount;
+ 
+         /* Time spent waiting on a runqueue: */
+         unsigned long long              run_delay;
+ 
+         /* Timestamps: */
+ 
+         /* When did we last run on a CPU? */
+         unsigned long long              last_arrival;
+ 
+         /* When were we last queued to run? */
+         unsigned long long              last_queued;
+ 
+#endif /* CONFIG_SCHED_INFO */
 };
 
-struct sched_rt_entity {
-	struct list_head run_list;
-	unsigned long timeout;
-	unsigned long watchdog_stamp;
-	unsigned int time_slice;
-	unsigned short on_rq;
-	unsigned short on_list;
+/*
+ * Integer metrics need fixed point arithmetic, e.g., sched/fair
+ * has a few: load, load_avg, util_avg, freq, and capacity.
+ *
+ * We define a basic fixed point arithmetic range, and then formalize
+ * all these metrics based on that basic range.
+ */
+ # define SCHED_FIXEDPOINT_SHIFT         10
+ # define SCHED_FIXEDPOINT_SCALE         (1L << SCHED_FIXEDPOINT_SHIFT)
 
-	struct sched_rt_entity *back;
-#ifdef CONFIG_RT_GROUP_SCHED
-	struct sched_rt_entity	*parent;
-	/* rq on which this entity is (to be) queued: */
-	struct rt_rq		*rt_rq;
-	/* rq "owned" by this entity/group: */
-	struct rt_rq		*my_q;
-#endif
+ /*
+ * Increase resolution of cpu_capacity calculations
+ */
+ #define SCHED_CAPACITY_SCALE    (1L << SCHED_CAPACITY_SHIFT)
+ 
+ struct load_weight {
+          unsigned long                   weight;
+          u32                             inv_weight;
+ };
+
+ /**
+ * struct util_est - Estimation utilization of FAIR tasks
+ * @enqueued: instantaneous estimated utilization of a task/cpu
+ * @ewma:     the Exponential Weighted Moving Average (EWMA)
+ *            utilization of a task
+ *
+ * Support data structure to track an Exponential Weighted Moving Average
+ * (EWMA) of a FAIR task's utilization. New samples are added to the moving
+ * average each time a task completes an activation. Sample's weight is chosen
+ * so that the EWMA will be relatively insensitive to transient changes to the
+ * task's workload.
+ *
+ * The enqueued attribute has a slightly different meaning for tasks and cpus:
+ * - task:   the task's util_avg at last task dequeue time
+ * - cfs_rq: the sum of util_est.enqueued for each RUNNABLE task on that CPU
+ * Thus, the util_est.enqueued of a task represents the contribution on the
+ * estimated utilization of the CPU where that task is currently enqueued.
+ *
+ * Only for tasks we track a moving average of the past instantaneous
+ * estimated utilization. This allows to absorb sporadic drops in utilization
+ * of an otherwise almost periodic task.
+ */
+ struct util_est {
+          unsigned int                    enqueued;
+          unsigned int                    ewma;
+ #define UTIL_EST_WEIGHT_SHIFT           2
+ } __attribute__((__aligned__(sizeof(u64))));
+ 
+ /*
+ * The load_avg/util_avg accumulates an infinite geometric series
+ * (see __update_load_avg() in kernel/sched/fair.c).
+ *
+ * [load_avg definition]
+ *
+ *   load_avg = runnable% * scale_load_down(load)
+ *
+ * where runnable% is the time ratio that a sched_entity is runnable.
+ * For cfs_rq, it is the aggregated load_avg of all runnable and
+ * blocked sched_entities.
+ *
+ * load_avg may also take frequency scaling into account:
+ *
+ *   load_avg = runnable% * scale_load_down(load) * freq%
+ *
+ * where freq% is the CPU frequency normalized to the highest frequency.
+ *
+ * [util_avg definition]
+ *
+ *   util_avg = running% * SCHED_CAPACITY_SCALE
+ *
+ * where running% is the time ratio that a sched_entity is running on
+ * a CPU. For cfs_rq, it is the aggregated util_avg of all runnable
+ * and blocked sched_entities.
+ *
+ * util_avg may also factor frequency scaling and CPU capacity scaling:
+ *
+ *   util_avg = running% * SCHED_CAPACITY_SCALE * freq% * capacity%
+ *
+ * where freq% is the same as above, and capacity% is the CPU capacity
+ * normalized to the greatest capacity (due to uarch differences, etc).
+ *
+ * N.B., the above ratios (runnable%, running%, freq%, and capacity%)
+ * themselves are in the range of [0, 1]. To do fixed point arithmetics,
+ * we therefore scale them to as large a range as necessary. This is for
+ * example reflected by util_avg's SCHED_CAPACITY_SCALE.
+ *
+ * [Overflow issue]
+ *
+ * The 64-bit load_sum can have 4353082796 (=2^64/47742/88761) entities
+ * with the highest load (=88761), always runnable on a single cfs_rq,
+ * and should not overflow as the number already hits PID_MAX_LIMIT.
+ *
+ * For all other cases (including 32-bit kernels), struct load_weight's
+ * weight will overflow first before we do, because:
+ *
+ *    Max(load_avg) <= Max(load.weight)
+ *
+ * Then it is the load_weight's responsibility to consider overflow
+ * issues.
+ */
+ struct sched_avg {
+          u64                             last_update_time;
+          u64                             load_sum;
+          u64                             runnable_load_sum;
+          u32                             util_sum;
+          u32                             period_contrib;
+          unsigned long                   load_avg;
+          unsigned long                   runnable_load_avg;
+          unsigned long                   util_avg;
+          struct util_est                 util_est;
+ } ____cacheline_aligned;
+ 
+ struct sched_statistics {
+ #ifdef CONFIG_SCHEDSTATS
+          u64                             wait_start;
+          u64                             wait_max;
+          u64                             wait_count;
+          u64                             wait_sum;
+          u64                             iowait_count;
+          u64                             iowait_sum;
+
+          u64                             sleep_start;
+          u64                             sleep_max;
+          s64                             sum_sleep_runtime;
+ 
+          u64                             block_start;
+          u64                             block_max;
+          u64                             exec_max;
+          u64                             slice_max;
+ 
+          u64                             nr_migrations_cold;
+          u64                             nr_failed_migrations_affine;
+          u64                             nr_failed_migrations_running;
+          u64                             nr_failed_migrations_hot;
+          u64                             nr_forced_migrations;
+  
+          u64                             nr_wakeups;
+          u64                             nr_wakeups_sync;
+          u64                             nr_wakeups_migrate;
+          u64                             nr_wakeups_local;
+          u64                             nr_wakeups_remote;
+          u64                             nr_wakeups_affine;
+          u64                             nr_wakeups_affine_attempts;
+          u64                             nr_wakeups_passive;
+          u64                             nr_wakeups_idle;
+ #endif
+};
+ 
+ struct sched_entity {
+          /* For load-balancing: */
+          struct load_weight              load;
+          unsigned long                   runnable_weight;
+          struct rb_node                  run_node;
+          struct list_head                group_node;
+          unsigned int                    on_rq;
+ 
+          u64                             exec_start;
+          u64                             sum_exec_runtime;
+          u64                             vruntime;
+          u64                             prev_sum_exec_runtime;
+ 
+          u64                             nr_migrations;
+ 
+         struct sched_statistics         statistics;
+ 
+ #ifdef CONFIG_FAIR_GROUP_SCHED
+         int                             depth;
+          struct sched_entity             *parent;
+          /* rq on which this entity is (to be) queued: */
+          struct cfs_rq                   *cfs_rq;
+          /* rq "owned" by this entity/group: */
+          struct cfs_rq                   *my_q;
+ #endif
+ 
+ #ifdef CONFIG_SMP
+          /*
+           * Per entity load average tracking.
+           *
+           * Put into separate cache line so it does not
+           * collide with read-mostly values above.
+           */
+          struct sched_avg                avg;
+ #endif
+};
+
+ struct sched_rt_entity {
+          struct list_head                run_list;
+          unsigned long                   timeout;
+          unsigned long                   watchdog_stamp;
+          unsigned int                    time_slice;
+          unsigned short                  on_rq;
+          unsigned short                  on_list;
+ 
+          struct sched_rt_entity          *back;
+ #ifdef CONFIG_RT_GROUP_SCHED
+          struct sched_rt_entity          *parent;
+          /* rq on which this entity is (to be) queued: */
+          struct rt_rq                    *rt_rq;
+          /* rq "owned" by this entity/group: */
+          struct rt_rq                    *my_q;
+ #endif
 };
 
 struct sched_dl_entity {
@@ -1451,6 +1614,38 @@ struct sched_dl_entity {
 	 */
 	struct hrtimer dl_timer;
 };
+
+#ifdef CONFIG_UCLAMP_TASK
+/*
+ * Number of utiliation clamp groups
+ *
+ * The first clamp group (group_id=0) is used to track non clamped tasks, i.e.
+ * util_{min,max} (0,SCHED_CAPACITY_SCALE). Thus we allocate one more group in
+ * addition to the configured number.
+ */
+#define UCLAMP_GROUPS (CONFIG_UCLAMP_GROUPS_COUNT + 1)
+
+/**
+ * Utilization clamp group
+ *
+ * A utilization clamp group maps a:
+ *   clamp value (value), i.e.
+ *   util_{min,max} value requested from userspace
+ * to a:
+ *   clamp group index (group_id), i.e.
+ *   index of the per-cpu RUNNABLE tasks refcounting array
+ *
+ * The mapped bit is set whenever a task has been mapped on a clamp group for
+ * the first time. When this bit is set, any clamp group get (for a new clamp
+ * value) will be matches by a clamp group put (for the old clamp value).
+ */
+struct uclamp_se {
+       unsigned int value              : SCHED_CAPACITY_SHIFT + 1;
+       unsigned int group_id           : order_base_2(UCLAMP_GROUPS);
+       unsigned int mapped             : 1;
+	   unsigned int active             : 1;
+};
+#endif /* CONFIG_UCLAMP_TASK */
 
 union rcu_special {
 	struct {
@@ -1520,7 +1715,7 @@ struct task_struct {
 
 #ifdef CONFIG_UCLAMP_TASK
     /* Utlization clamp values for this task */
-    int uclamp[UCLAMP_CNT];
+    struct uclamp_se                uclamp[UCLAMP_CNT];
 #endif
 
 #ifdef CONFIG_PREEMPT_NOTIFIERS
