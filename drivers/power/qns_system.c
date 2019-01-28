@@ -1421,10 +1421,10 @@ static int qnovo_notifier_call(struct notifier_block *nb,
 	if (ev != PSY_EVENT_PROP_CHANGED)
 		return NOTIFY_OK;
 
-	if (strcmp(psy->desc->name, "battery") == 0
-		|| strcmp(psy->desc->name, "bms") == 0
-		|| strcmp(psy->desc->name, "usb") == 0
-		|| strcmp(psy->desc->name, "dc") == 0)
+	if (strcmp(psy->name, "battery") == 0
+		|| strcmp(psy->name, "bms") == 0
+		|| strcmp(psy->name, "usb") == 0
+		|| strcmp(psy->name, "dc") == 0)
 		schedule_work(&chip->status_change_work);
 
 	return NOTIFY_OK;
