@@ -38,11 +38,6 @@ CONFIG_IRQ_WORK=y
 CONFIG_BUILDTIME_EXTABLE_SORT=y
 
 #
-# Frandom
-#
-CONFIG_FRANDOM=y
-
-#
 # Voltage Control
 #
 # CONFIG_VOLTAGE_CONTROL is not set
