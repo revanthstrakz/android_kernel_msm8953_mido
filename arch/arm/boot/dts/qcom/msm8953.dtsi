@@ -513,8 +513,7 @@
 
 	qcom,msm-thermal {
 		compatible = "qcom,msm-thermal";
-		qcom,sensor-id = <9>, <10>, <11>, <12>,
-                         <4>, <5>, <6>, <7>;
+		qcom,sensor-id = <9>;
 		qcom,poll-ms = <1000>;
 		qcom,limit-temp = <90>;
 		qcom,temp-hysteresis = <85>;
@@ -526,8 +525,7 @@
 		qcom,freq-mitigation-value = <1689600>;
 		qcom,therm-reset-temp = <115>;
 		qcom,synchronous-cluster-id = <0 1>;
-		qcom,synchronous-cluster-map = <0 4 &CPU0 &CPU1 &CPU2 &CPU3>,
-						               <1 4 &CPU4 &CPU5 &CPU6 &CPU7>;
+		qcom,synchronous-cluster-map = <0 4 &CPU0 &CPU1 &CPU2 &CPU3>,<1 4 &CPU4 &CPU5 &CPU6 &CPU7>;
 		qcom,disable-cx-phase-ctrl;
 		qcom,disable-gfx-phase-ctrl;
 		qcom,disable-vdd-mx;
