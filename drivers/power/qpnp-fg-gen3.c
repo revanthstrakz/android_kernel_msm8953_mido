@@ -2168,7 +2168,7 @@ static void status_change_work(struct work_struct *work)
 		goto out;
 	}
 
-	chip->prev_charge_status = chip->charge_status;
+	chip->charge_status = chip->charge_status;
 	chip->charge_status = prop.intval;
 	rc = power_supply_get_property(chip->batt_psy,
 			POWER_SUPPLY_PROP_CHARGE_TYPE, &prop);
