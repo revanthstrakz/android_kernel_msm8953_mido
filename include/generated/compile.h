@@ -1,7 +1,7 @@
-/* This file is auto generated, version 7 */
+/* This file is auto generated, version 11 */
 /* SMP PREEMPT */
 #define UTS_MACHINE "arm64"
-#define UTS_VERSION "#7 SMP PREEMPT Sat Feb 9 10:19:12 IST 2019"
-#define LINUX_COMPILE_BY "TheHitMan"
-#define LINUX_COMPILE_HOST "CINNAMON"
+#define UTS_VERSION "#11 SMP PREEMPT Sat Feb 9 17:48:39 IST 2019"
+#define LINUX_COMPILE_BY "ReVaNtH"
+#define LINUX_COMPILE_HOST "StRaKz"
 #define LINUX_COMPILER "Android (5122994 based on r344140) clang version 8.0.4 (based on LLVM 8.0.4svn)"

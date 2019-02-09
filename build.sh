@@ -3,11 +3,11 @@ export ARCH=arm64
 # Export SUBARCH <arm, arm64, x86, x86_64>
 export SUBARCH=arm64
 # Set kernal name
-export LOCALVERSION=Revolt.EAS-R16
+
 # Export Username
-export KBUILD_BUILD_USER=TheHitMan
+export KBUILD_BUILD_USER=ReVaNtH
 # Export Machine name
-export KBUILD_BUILD_HOST=CINNAMON
+export KBUILD_BUILD_HOST=StRaKz
 # Compiler String
 CC=~/kernel/clang/clang-r344140b/bin/clang
 export KBUILD_COMPILER_STRING="$(${CC} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"

@@ -1,1 +1,1 @@
-cmd_arch/arm64/hotplug/built-in.o :=  /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o arch/arm64/hotplug/built-in.o arch/arm64/hotplug/autosmp.o arch/arm64/hotplug/thunderplug.o arch/arm64/hotplug/blu_plug.o 
+cmd_arch/arm64/hotplug/built-in.o :=  /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o arch/arm64/hotplug/built-in.o arch/arm64/hotplug/autosmp.o arch/arm64/hotplug/thunderplug.o 
