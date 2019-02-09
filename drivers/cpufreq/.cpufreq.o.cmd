@@ -4,7 +4,6 @@ source_drivers/cpufreq/cpufreq.o := drivers/cpufreq/cpufreq.c
 
 deps_drivers/cpufreq/cpufreq.o := \
     $(wildcard include/config/smp.h) \
-    $(wildcard include/config/voltage/control.h) \
     $(wildcard include/config/hotplug/cpu.h) \
     $(wildcard include/config/cpu/freq/gov/performance.h) \
   include/linux/cpu.h \
@@ -736,9 +735,6 @@ deps_drivers/cpufreq/cpufreq.o := \
     $(wildcard include/config/have/mod/arch/specific.h) \
     $(wildcard include/config/modules/use/elf/rel.h) \
     $(wildcard include/config/modules/use/elf/rela.h) \
-  include/linux/sched/cpufreq.h \
-    $(wildcard include/config/energy/model.h) \
-    $(wildcard include/config/cpu/freq/gov/schedutil.h) \
   include/linux/slab.h \
     $(wildcard include/config/slab/debug.h) \
     $(wildcard include/config/failslab.h) \

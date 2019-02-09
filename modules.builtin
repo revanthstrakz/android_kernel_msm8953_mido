@@ -11,8 +11,6 @@ kernel/arch/arm64/crypto/sha256-arm64.ko
 kernel/arch/arm64/crypto/sha512-arm64.ko
 kernel/arch/arm64/crypto/crc32-arm64.ko
 kernel/kernel/configs.ko
-kernel/kernel/sched/cpufreq_darkutil.ko
-kernel/kernel/sched/cpufreq_blu_schedutil.ko
 kernel/mm/zbud.ko
 kernel/mm/zsmalloc.ko
 kernel/fs/binfmt_script.ko
@@ -115,6 +113,8 @@ kernel/drivers/char/hw_random/rng-core.ko
 kernel/drivers/char/hw_random/msm_rng.ko
 kernel/drivers/cpufreq/cpufreq_stats.ko
 kernel/drivers/cpufreq/cpufreq_performance.ko
+kernel/drivers/cpufreq/cpufreq_chill.ko
+kernel/drivers/cpufreq/cpufreq_relaxed.ko
 kernel/drivers/crypto/msm/qcedev.ko
 kernel/drivers/crypto/msm/qce50.ko
 kernel/drivers/crypto/msm/compat_qcedev.ko

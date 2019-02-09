@@ -12,7 +12,7 @@ export KBUILD_BUILD_HOST=CINNAMON
 CC=~/kernel/clang/clang-r344140b/bin/clang
 export KBUILD_COMPILER_STRING="$(${CC} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 # Make and Clean
-make clean && make mrproper
+
 # Make <defconfig>
 make revolt_defconfig
 # Build Kernel

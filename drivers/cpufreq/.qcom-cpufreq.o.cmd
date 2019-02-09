@@ -3,6 +3,7 @@ cmd_drivers/cpufreq/qcom-cpufreq.o := /home/revanthstrakz/kernel/clang/clang-r34
 source_drivers/cpufreq/qcom-cpufreq.o := drivers/cpufreq/qcom-cpufreq.c
 
 deps_drivers/cpufreq/qcom-cpufreq.o := \
+    $(wildcard include/config/cpu/boost.h) \
   include/linux/init.h \
     $(wildcard include/config/broken/rodata.h) \
     $(wildcard include/config/debug/rodata.h) \

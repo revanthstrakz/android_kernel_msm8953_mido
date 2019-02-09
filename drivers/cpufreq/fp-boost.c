@@ -26,18 +26,12 @@
 
 #define pr_fmt(fmt) "fp-boost: " fmt
 
-#include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/cpufreq.h>
 #include <linux/cpu.h>
+#include <linux/cpufreq.h>
 #include <linux/display_state.h>
-#include <linux/sched.h>
-#include <linux/moduleparam.h>
-#include <linux/slab.h>
 #include <linux/input.h>
+#include <linux/slab.h>
 #include <linux/time.h>
-#include <linux/kthread.h>
-#include <linux/sched/rt.h>
 
 /* Available bits for boost_policy state */
 #define DRIVER_ENABLED        (1U << 0)
@@ -45,9 +39,6 @@
 
 /* Fingerprint sensor input key */
 #define FINGERPRINT_KEY 0x2ee
-
-/* The duration in milliseconds for the fingerprint boost */
-#define FP_BOOST_MS (2000)
 
 /*
  * "fp_config" = "fingerprint boost configuration". This contains the data and
@@ -59,7 +50,7 @@ struct fp_config {
 	uint32_t adj_duration_ms;
 	uint32_t cpus_to_boost;
 	uint32_t duration_ms;
-	uint32_t freq[1];
+	uint32_t freq[2];
 };
 
 /*
@@ -101,7 +92,7 @@ static void fp_boost_main(struct work_struct *work)
 	update_online_cpu_policy();
 
 	queue_delayed_work(b->wq, &fp->unboost_work,
-				msecs_to_jiffies(FP_BOOST_MS));
+				msecs_to_jiffies(CONFIG_FINGERPRINT_BOOST_MS));
 
 }
 
@@ -417,3 +408,4 @@ free_mem:
 	return ret;
 }
 late_initcall(cpu_fp_init);
+
