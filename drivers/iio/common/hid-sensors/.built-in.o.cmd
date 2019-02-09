@@ -1,0 +1,1 @@
+cmd_drivers/iio/common/hid-sensors/built-in.o :=  rm -f drivers/iio/common/hid-sensors/built-in.o; /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ar rcsD drivers/iio/common/hid-sensors/built-in.o

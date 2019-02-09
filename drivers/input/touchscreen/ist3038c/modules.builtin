@@ -1,0 +1,6 @@
+kernel/drivers/input/touchscreen/ist3038c/ist30xxc.ko
+kernel/drivers/input/touchscreen/ist3038c/ist30xxc_misc.ko
+kernel/drivers/input/touchscreen/ist3038c/ist30xxc_sys.ko
+kernel/drivers/input/touchscreen/ist3038c/ist30xxc_update.ko
+kernel/drivers/input/touchscreen/ist3038c/ist30xxc_tracking.ko
+kernel/drivers/input/touchscreen/ist3038c/ist30xxc_cmcs.ko

@@ -1,0 +1,1 @@
+cmd_drivers/edac/edac_core.o := /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o drivers/edac/edac_core.o drivers/edac/edac_mc.o drivers/edac/edac_device.o drivers/edac/edac_mc_sysfs.o drivers/edac/edac_pci_sysfs.o drivers/edac/edac_module.o drivers/edac/edac_device_sysfs.o drivers/edac/edac_pci.o 

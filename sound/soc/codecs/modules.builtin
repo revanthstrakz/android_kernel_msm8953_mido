@@ -1,0 +1,14 @@
+kernel/sound/soc/codecs/snd-soc-wcd9330.ko
+kernel/sound/soc/codecs/snd-soc-wcd9335.ko
+kernel/sound/soc/codecs/wcdcal-hwdep.ko
+kernel/sound/soc/codecs/audio-ext-clock.ko
+kernel/sound/soc/codecs/snd-soc-wcd9xxx.ko
+kernel/sound/soc/codecs/snd-soc-wcd9xxx-v2.ko
+kernel/sound/soc/codecs/snd-soc-msm8952-wcd.ko
+kernel/sound/soc/codecs/msm8916-wcd-irq.ko
+kernel/sound/soc/codecs/snd-soc-wcd-cpe.ko
+kernel/sound/soc/codecs/snd-soc-wcd-mbhc.ko
+kernel/sound/soc/codecs/snd-soc-wsa881x.ko
+kernel/sound/soc/codecs/snd-soc-wsa881x-analog.ko
+kernel/sound/soc/codecs/snd-soc-wsa881x-sensor.ko
+kernel/sound/soc/codecs/snd-soc-msm-stub.ko

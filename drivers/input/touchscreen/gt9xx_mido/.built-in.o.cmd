@@ -1,0 +1,1 @@
+cmd_drivers/input/touchscreen/gt9xx_mido/built-in.o :=  /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o drivers/input/touchscreen/gt9xx_mido/built-in.o drivers/input/touchscreen/gt9xx_mido/gt9xx.o drivers/input/touchscreen/gt9xx_mido/gt9xx_update.o drivers/input/touchscreen/gt9xx_mido/goodix_tool.o 

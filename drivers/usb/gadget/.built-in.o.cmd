@@ -1,0 +1,1 @@
+cmd_drivers/usb/gadget/built-in.o :=  /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o drivers/usb/gadget/built-in.o drivers/usb/gadget/libcomposite.o drivers/usb/gadget/debug.o drivers/usb/gadget/udc/built-in.o drivers/usb/gadget/function/built-in.o drivers/usb/gadget/legacy/built-in.o drivers/usb/gadget/g_android.o drivers/usb/gadget/ci13xxx_msm.o 

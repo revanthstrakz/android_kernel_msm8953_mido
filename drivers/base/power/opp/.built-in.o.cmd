@@ -1,0 +1,1 @@
+cmd_drivers/base/power/opp/built-in.o :=  /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o drivers/base/power/opp/built-in.o drivers/base/power/opp/core.o drivers/base/power/opp/cpu.o 

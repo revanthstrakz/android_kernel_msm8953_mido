@@ -1,0 +1,1 @@
+cmd_drivers/firmware/built-in.o :=  /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o drivers/firmware/built-in.o drivers/firmware/dmi_scan.o drivers/firmware/dmi-id.o drivers/firmware/efi/built-in.o 

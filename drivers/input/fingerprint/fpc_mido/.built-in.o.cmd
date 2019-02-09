@@ -1,0 +1,1 @@
+cmd_drivers/input/fingerprint/fpc_mido/built-in.o :=  /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o drivers/input/fingerprint/fpc_mido/built-in.o drivers/input/fingerprint/fpc_mido/fpc1020_tee.o 

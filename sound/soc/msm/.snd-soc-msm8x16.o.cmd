@@ -1,0 +1,1 @@
+cmd_sound/soc/msm/snd-soc-msm8x16.o := /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o sound/soc/msm/snd-soc-msm8x16.o sound/soc/msm/msm8952.o sound/soc/msm/msm-audio-pinctrl.o sound/soc/msm/msm8952-slimbus.o sound/soc/msm/msm8952-dai-links.o 

@@ -1,0 +1,1 @@
+cmd_drivers/input/touchscreen/ft5435/built-in.o :=  /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o drivers/input/touchscreen/ft5435/built-in.o drivers/input/touchscreen/ft5435/ft5435_ts.o 

@@ -1,0 +1,1 @@
+cmd_drivers/pinctrl/qcom/built-in.o :=  /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o drivers/pinctrl/qcom/built-in.o drivers/pinctrl/qcom/pinctrl-msm.o drivers/pinctrl/qcom/pinctrl-msm8953.o 

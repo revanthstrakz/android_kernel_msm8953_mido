@@ -1,0 +1,1 @@
+cmd_sound/soc/codecs/snd-soc-wsa881x-analog.o := /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o sound/soc/codecs/snd-soc-wsa881x-analog.o sound/soc/codecs/wsa881x-analog.o sound/soc/codecs/wsa881x-tables-analog.o sound/soc/codecs/wsa881x-regmap-analog.o sound/soc/codecs/wsa881x-irq.o 

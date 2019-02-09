@@ -1,0 +1,1 @@
+cmd_kernel/x509_certificate_list := cat dm-android-verity.x509 verity_der.x509 /dev/null >kernel/x509_certificate_list ; echo "  - Including cert dm-android-verity.x509" ; echo "  - Including cert verity_der.x509"

@@ -1,0 +1,1 @@
+cmd_arch/arm64/crypto/speck-neon.o := /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o arch/arm64/crypto/speck-neon.o arch/arm64/crypto/speck-neon-core.o arch/arm64/crypto/speck-neon-glue.o 

@@ -1,0 +1,1 @@
+cmd_arch/arm64/crypto/aes-arm64.o := /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o arch/arm64/crypto/aes-arm64.o arch/arm64/crypto/aes-cipher-core.o arch/arm64/crypto/aes-cipher-glue.o 

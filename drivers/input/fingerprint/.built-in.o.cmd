@@ -1,0 +1,1 @@
+cmd_drivers/input/fingerprint/built-in.o :=  /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o drivers/input/fingerprint/built-in.o drivers/input/fingerprint/goodix_mido/built-in.o drivers/input/fingerprint/fpc_mido/built-in.o 

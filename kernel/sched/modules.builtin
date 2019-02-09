@@ -1,0 +1,2 @@
+kernel/kernel/sched/cpufreq_darkutil.ko
+kernel/kernel/sched/cpufreq_blu_schedutil.ko

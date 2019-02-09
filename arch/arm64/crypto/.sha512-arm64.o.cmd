@@ -1,0 +1,1 @@
+cmd_arch/arm64/crypto/sha512-arm64.o := /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o arch/arm64/crypto/sha512-arm64.o arch/arm64/crypto/sha512-glue.o arch/arm64/crypto/sha512-core.o 

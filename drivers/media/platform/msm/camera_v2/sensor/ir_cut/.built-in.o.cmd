@@ -1,0 +1,1 @@
+cmd_drivers/media/platform/msm/camera_v2/sensor/ir_cut/built-in.o :=  /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o drivers/media/platform/msm/camera_v2/sensor/ir_cut/built-in.o drivers/media/platform/msm/camera_v2/sensor/ir_cut/msm_ir_cut.o 

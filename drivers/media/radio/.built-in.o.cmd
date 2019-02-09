@@ -1,0 +1,1 @@
+cmd_drivers/media/radio/built-in.o :=  /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o drivers/media/radio/built-in.o drivers/media/radio/radio-iris.o drivers/media/radio/radio-iris-transport.o drivers/media/radio/silabs/built-in.o 

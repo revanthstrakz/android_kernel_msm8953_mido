@@ -1,0 +1,1 @@
+cmd_drivers/iio/imu/built-in.o :=  /home/revanthstrakz/kernel/gcc/bin/aarch64-linux-android-ld -EL    -r -o drivers/iio/imu/built-in.o drivers/iio/imu/inv_mpu6050/built-in.o drivers/iio/imu/inv_icm20689/built-in.o drivers/iio/imu/bmi160/built-in.o drivers/iio/imu/inv_mpu9250/built-in.o 
