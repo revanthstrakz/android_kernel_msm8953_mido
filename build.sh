@@ -14,12 +14,13 @@ export KBUILD_COMPILER_STRING="$(${CC} --version | head -n 1 | perl -pe 's/\(htt
 # Make and Clean
 
 # Make <defconfig>
-make revolt_defconfig
+make strakz_defconfig
 # Build Kernel
 make ARCH=arm64 CC=~/kernel/clang/clang-r344140b/bin/clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=~/kernel/gcc/bin/aarch64-linux-android- -j4
 # Make kernel zip
-KERNEL_DIR=""
-ZIP_DIR=""
+mkdir ~/zip
+KERNEL_DIR="~/kernel/source"
+ZIP_DIR="~/zip"
 cp $KERNEL_DIR/arch/arm64/boot/dts/qcom/msm8953-qrd-sku3-mido-nontreble.dtb $ZIP_DIR/treble-unsupported/
 cp $KERNEL_DIR/arch/arm64/boot/dts/qcom/msm8953-qrd-sku3-mido-treble.dtb $ZIP_DIR/treble-supported/
 cp $KERNEL_DIR/arch/arm64/boot/Image.gz $ZIP_DIR/kernel/
